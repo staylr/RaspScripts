@@ -108,7 +108,7 @@ END
 			--protocol tcp --port 22 --cidr '0.0.0.0/0'
 
 	# Later operations may fail on missing instance profiles
-	# if this is missing.
+	# without this.
 	sleep 10
 
 	aws iam list-instance-profiles | jq -c .
@@ -150,8 +150,8 @@ export BASEDIR=/home/admin/DRJACK
 /usr/local/bin/disable.hyperthreading
 
 s3cmd -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/scripts/rasp_forecast.sh" "/home/admin/rasp_forecast.sh"
-s3cmd  -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/config/rasp.run.parameters.*" "$BASEDIR/RASP/RUN/"
-s3cmd  -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/config/rasp.ncl.region.data" "$BASEDIR/WRF/NCL/rasp.ncl.region.data"
+s3cmd  -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/config/rasp.run.parameters.*" "\$BASEDIR/RASP/RUN/"
+s3cmd  -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/config/rasp.ncl.region.data" "\$BASEDIR/WRF/NCL/rasp.ncl.region.data"
 
 cd /home/admin
 nohup sudo -n -i -u admin ./rasp_forecast.sh --s3bucket "s3://$s3bucket" --archive --shutdown $regions >& /var/log/rasp.log &
@@ -198,6 +198,12 @@ END
 			--min-size 0 \
 			--max-size 0 \
 		 	--recurrence "$stop_time * * *"
+
+		aws autoscaling put-notification-configuration \
+			--auto-scaling-group-name "$auto_scale_group" \
+			--topic-arn "$sns_topic" --notification-type \
+			autoscaling:EC2_INSTANCE_LAUNCH_ERROR \
+			autoscaling:EC2_INSTANCE_TERMINATE
 
 	elif [[ "$register_mode" == "stop" ]]
 	then
