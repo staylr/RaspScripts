@@ -10,9 +10,18 @@ set -x
 env_file=$1
 register_mode=$2
 
-if [[ ($register_mode != start && $register_mode != stop) || $env_file == "" ]]
+if [[ ($register_mode != start
+		&& $register_mode != stop
+		&& $register_mode != list)
+	|| $env_file == "" ]]
 then
-	echo "Usage: $0 config_file (start|stop)"
+	echo "Usage: $0 config_file (start|stop)" 2>&1
+	exit 1
+fi
+
+if [[ ! -f $env_file ]]
+then
+	echo "Config file $env_file not found" 2>&1
 	exit 1
 fi
 
@@ -129,6 +138,7 @@ function delete_security()
 			--policy-name "$s3access_policy"
 	aws iam delete-role --role-name "$iam_role"
 	aws ec2 delete-security-group --group-name "$security_group"
+	sleep 10
 }
 
 function register_auto_scale()
@@ -233,20 +243,18 @@ END
 	fi
 }
 
-if [[ "$register_mode" != "start" && "$register_mode" != "stop" ]]
-then
-	echo "Usage: schedule_rasp.sh [start|stop]" 2>&1
-	exit 1
-fi
-
-if [[ "$register_mode" == "start" ]]
+if [[ $register_mode == start ]]
 then
 	setup_security
 fi
 
-register_zones
+if [[ $register_mode == start || $register_mode == stop ]]
+then
+	register_zones
+	sleep 10
+fi
 
-if [[ "$register_mode" == "stop" ]]
+if [[ $register_mode == stop ]]
 then
 	delete_security
 fi
