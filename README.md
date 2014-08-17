@@ -1,6 +1,6 @@
 RaspScripts
 ===========
 
-Scripts for the Victorian RASP server.
+Scripts for the Victorian RASP server running on Amazon EC2.
 
-These rely on an Amazon AMI that is currently not public.
+These use Amazon AMI vicrasp_public_20140817 (ami-f7dd98c7). 
