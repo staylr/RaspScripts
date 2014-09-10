@@ -162,6 +162,7 @@ export BASEDIR=/home/admin/DRJACK
 s3cmd -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/scripts/rasp_forecast.sh" "/home/admin/rasp_forecast.sh"
 s3cmd  -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/config/rasp.run.parameters.*" "\$BASEDIR/RASP/RUN/"
 s3cmd  -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/config/rasp.ncl.region.data" "\$BASEDIR/WRF/NCL/rasp.ncl.region.data"
+s3cmd  -c /home/ubuntu/.s3cfg sync "s3://$config_s3bucket/config/rasp.ncl" "\$BASEDIR/WRF/NCL/rasp.ncl"
 chown admin /home/admin/rasp_forecast.sh
 chmod +x /home/admin/rasp_forecast.sh
 
